@@ -1,35 +1,27 @@
 <?php 
 
-require_once("config.php");
-
-if(isset($_POST['login'])){
-
-    $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
-    $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
-
-    $sql = "SELECT * FROM users WHERE username=:username OR email=:email";
-    $stmt = $db->prepare($sql);
-    
-    // bind parameter ke query
-    $params = array(
-        ":username" => $username,
-        ":email" => $username
-    );
-
-    $stmt->execute($params);
-
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    // jika user terdaftar
-    if($user){
-        // verifikasi password
-        if(password_verify($password, $user["password"])){
-            // buat Session
-            session_start();
-            $_SESSION["user"] = $user;
-            // login sukses, alihkan ke halaman timeline
-            header("Location: timeline.php");
-        }
+include 'config.php';
+ 
+error_reporting(0);
+ 
+session_start();
+ 
+if (isset($_SESSION['username'])) {
+    header("Location: timeline.php");
+}
+ 
+if (isset($_POST['submit'])) {
+    $email = $_POST['username'];
+    $password = $_POST['password'];
+ 
+    $sql = "SELECT * FROM users WHERE username='$email' AND password='$password'";
+    $result = mysqli_query($conn, $sql);
+    if ($result->num_rows > 0) {
+        $row = mysqli_fetch_assoc($result);
+        $_SESSION['username'] = $row['username'];
+        header("Location: timeline.php");
+    } else {
+        echo "<script>alert('Email atau password Anda salah. Silahkan coba lagi!')</script>";
     }
 }
 ?>

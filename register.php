@@ -1,95 +1,81 @@
-<?php
-
-require_once("config.php");
-
-if(isset($_POST['register'])){
-
-    // filter data yang diinputkan
-    $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
-    $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
-    // enkripsi password
-    $password = password_hash($_POST["password"], PASSWORD_DEFAULT);
-    $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
-
-
-    // menyiapkan query
-    $sql = "INSERT INTO users (name, username, email, password) 
-            VALUES (:name, :username, :email, :password)";
-    $stmt = $db->prepare($sql);
-
-    // bind parameter ke query
-    $params = array(
-        ":name" => $name,
-        ":username" => $username,
-        ":password" => $password,
-        ":email" => $email
-    );
-
-    // eksekusi query untuk menyimpan ke database
-    $saved = $stmt->execute($params);
-
-    // jika query simpan berhasil, maka user sudah terdaftar
-    // maka alihkan ke halaman login
-    if($saved) header("Location: login.php");
+<?php 
+ 
+include 'config.php';
+ 
+error_reporting(0);
+ 
+session_start();
+ 
+if (isset($_SESSION['username'])) {
+    header("Location: index.php");
 }
-
+ 
+if (isset($_POST['submit'])) {
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $password = md5($_POST['password']);
+    $cpassword = md5($_POST['cpassword']);
+ 
+    if ($password == $cpassword) {
+        $sql = "SELECT * FROM users WHERE email='$email'";
+        $result = mysqli_query($conn, $sql);
+        if (!$result->num_rows > 0) {
+            $sql = "INSERT INTO users (username, email, password)
+                    VALUES ('$username', '$email', '$password')";
+            $result = mysqli_query($conn, $sql);
+            if ($result) {
+                echo "<script>alert('Selamat, registrasi berhasil!')</script>";
+                $username = "";
+                $email = "";
+                $_POST['password'] = "";
+                $_POST['cpassword'] = "";
+            } else {
+                echo "<script>alert('Woops! Terjadi kesalahan.')</script>";
+            }
+        } else {
+            echo "<script>alert('Woops! Email Sudah Terdaftar.')</script>";
+        }
+         
+    } else {
+        echo "<script>alert('Password Tidak Sesuai')</script>";
+    }
+}
+ 
 ?>
-
+ 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Register PWEB</title>
-
-    <link rel="stylesheet" href="css/bootstrap.min.css" />
+ 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+ 
+    <link rel="stylesheet" type="text/css" href="style.css">
+ 
+    <title>Niagahoster Register</title>
 </head>
-<body class="bg-light">
-
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-6">
-
-        <p>&larr; <a href="index.php">Home</a>
-
-        <h4>Bergabunglah bersama ribuan orang lainnya.</h4>
-        <p>Sudah punya akun? <a href="login.php">Login di sini</a></p>
-
-        <form action="" method="POST">
-
-            <div class="form-group">
-                <label for="name">Nama Lengkap</label>
-                <input class="form-control" type="text" name="name" placeholder="Nama kamu" />
+<body>
+    <div class="container">
+        <form action="" method="POST" class="login-email">
+            <p class="login-text" style="font-size: 2rem; font-weight: 800;">Register</p>
+            <div class="input-group">
+                <input type="text" placeholder="Username" name="username" value="<?php echo $username; ?>" required>
             </div>
-
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input class="form-control" type="text" name="username" placeholder="Username" />
+            <div class="input-group">
+                <input type="email" placeholder="Email" name="email" value="<?php echo $email; ?>" required>
             </div>
-
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input class="form-control" type="email" name="email" placeholder="Alamat Email" />
+            <div class="input-group">
+                <input type="password" placeholder="Password" name="password" value="<?php echo $_POST['password']; ?>" required>
             </div>
-
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input class="form-control" type="password" name="password" placeholder="Password" />
+            <div class="input-group">
+                <input type="password" placeholder="Confirm Password" name="cpassword" value="<?php echo $_POST['cpassword']; ?>" required>
             </div>
-
-            <input type="submit" class="btn btn-success btn-block" name="register" value="Daftar" />
-
+            <div class="input-group">
+                <button name="submit" class="btn">Register</button>
+            </div>
+            <p class="login-register-text">Anda sudah punya akun? <a href="index.php">Login </a></p>
         </form>
-            
-        </div>
-
-        <div class="col-md-6">
-            <img class="img img-responsive" src="img/logo2-40x40.png" />
-        </div>
-
     </div>
-</div>
-
 </body>
 </html>

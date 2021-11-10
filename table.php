@@ -1,3 +1,13 @@
+<?php 
+ 
+session_start();
+ 
+if (!isset($_SESSION['username'])) {
+    header("Location: index.php");
+}
+ 
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,7 +35,7 @@ h2,h6{
 </style>
 <body>
     <h2>Table of Data</h2>
-    <a href="timeline.php"><h6>Back</h6></a>
+    <a href="berhasil_login.php"><h6>Back</h6></a>
 </body>
 </html>
 <?php

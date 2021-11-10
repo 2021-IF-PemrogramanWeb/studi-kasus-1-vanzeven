@@ -2,11 +2,12 @@
  
 session_start();
  
-if (!isset($_SESSION['user'])) {
+if (!isset($_SESSION['username'])) {
     header("Location: index.php");
 }
+ 
 ?>
-
+ 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,7 +20,7 @@ if (!isset($_SESSION['user'])) {
     <img class="img img-responsive" src="img/logo2-40x40.png" />
     <button onclick="document.location='table.php'">Table</button>
     <button onclick="document.location='chart.php'">Chart</button>
-    <button onclick="document.location='index.php'">Log out</button>
+    <button onclick="document.location='logout.php'">Log out</button>
     <h2>Welcome! Please select option above</h2>
     
 </body>

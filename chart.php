@@ -1,3 +1,13 @@
+<?php 
+ 
+session_start();
+ 
+if (!isset($_SESSION['username'])) {
+    header("Location: index.php");
+}
+ 
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,7 +17,7 @@
 <body>
     <br>
     <img class="img img-responsive" src="img/logo2-40x40.png" />
-    <button onclick="document.location='timeline.php'">Back to table</button>
+    <button onclick="document.location='berhasil_login.php'">Back to table</button>
     <canvas id="myChart"></canvas>
     <?php
     // Koneksikan ke database
